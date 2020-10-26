@@ -46,7 +46,14 @@ static sexp* new_env_call = NULL;
 static sexp* new_env__parent_node = NULL;
 static sexp* new_env__size_node = NULL;
 
+
+SEXP R_NewHashedEnv(SEXP, SEXP);
+static sexp* new_env_size = NULL;
+
 sexp* r_new_environment(sexp* parent, r_ssize size) {
+  r_int_poke(new_env_size, 0, size);
+  return R_NewHashedEnv(parent, new_env_size);
+
   parent = parent ? parent : r_empty_env;
   r_node_poke_car(new_env__parent_node, parent);
 
@@ -261,6 +268,9 @@ void r_init_library_env() {
 
   new_env__parent_node = r_node_cddr(new_env_call);
   new_env__size_node = r_node_cdr(new_env__parent_node);
+
+  new_env_size = r_new_vector(r_type_integer, 1);
+  r_mark_precious(new_env_size);
 
   env2list_call = r_parse("as.list.environment(x, all.names = TRUE)");
   r_mark_precious(env2list_call);

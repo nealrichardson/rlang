@@ -17,6 +17,16 @@ enum r_type r_typeof(r_obj* x) {
 void r_preserve(r_obj* x);
 void r_unpreserve(r_obj* x);
 
+
+#define r_preserve(X) (SETCAR(_r_prot, X),              \
+                       (r_preserve)(CAR(_r_prot)),      \
+                       SETCAR(_r_prot, r_null))
+
+#define r_unpreserve(X) (_r_preserve_input = X,                 \
+                         R_ReleaseObject(_r_preserve_input),    \
+                         (r_unpreserve)(_r_preserve_input))
+
+
 static inline
 void r_mark_shared(r_obj* x) {
   MARK_NOT_MUTABLE(x);
@@ -32,6 +42,16 @@ r_obj* r_preserve_global(r_obj* x) {
   r_mark_shared(x);
   return x;
 }
+
+static
+r_obj* _r_preserve_global_output = NULL;
+
+#define r_preserve_global(X) (_r_preserve_global_output = KEEP(X),         \
+                              R_PreserveObject(_r_preserve_global_output), \
+                              (r_preserve)(_r_preserve_global_output),     \
+                              r_mark_shared(_r_preserve_global_output),    \
+                              FREE(1),                                     \
+                              _r_preserve_global_output)
 
 static inline
 void r_mark_object(r_obj* x) {

@@ -82,11 +82,16 @@ void r_env_unbind(r_obj* env, r_obj* sym) {
 #endif
 }
 
+#define r_env_poke(ENV, SYM, VALUE)             \
+  (SETCAR(_r_prot, VALUE),                      \
+   Rf_defineVar(SYM, CAR(_r_prot), ENV),        \
+   SETCDR(_r_prot, R_NilValue))
+
 static inline
-r_obj* r_env_poke(r_obj* env, r_obj* sym, r_obj* value) {
+void (r_env_poke)(r_obj* env, r_obj* sym, r_obj* value) {
   Rf_defineVar(sym, value, env);
-  return env;
 }
+
 void r_env_poke_lazy(r_obj* env, r_obj* sym, r_obj* expr, r_obj* eval_env);
 
 static inline

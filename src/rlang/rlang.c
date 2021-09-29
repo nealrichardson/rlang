@@ -73,6 +73,9 @@ r_obj* r_init_library(r_obj* ns) {
                  "x `ns` must be a namespace environment.");
   }
 
+  _r_prot = Rf_cons(r_null, r_null);
+  R_PreserveObject(_r_prot);
+
   // Need to be first
   r_init_library_vendor(); // Needed for xxh used in `r_preserve()`
   r_init_library_globals_syms();
@@ -103,3 +106,5 @@ r_obj* r_init_library(r_obj* ns) {
   // Return a SEXP so the init function can be called from R
   return r_null;
 }
+
+r_obj* _r_prot = NULL;

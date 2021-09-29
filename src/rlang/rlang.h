@@ -38,6 +38,10 @@ r_ssize r_as_ssize(r_obj* n) {
 }
 
 
+extern
+r_obj* _r_prot;
+
+
 #include "obj.h"
 #include "globals.h"
 
